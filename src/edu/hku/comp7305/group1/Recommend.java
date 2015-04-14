@@ -1,11 +1,11 @@
 package edu.hku.comp7305.group1;
 
 
+import org.apache.hadoop.mapred.JobConf;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import org.apache.hadoop.mapred.JobConf;
 
 public class Recommend {
 
