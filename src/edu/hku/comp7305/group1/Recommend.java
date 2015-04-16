@@ -14,7 +14,7 @@ public class Recommend {
 
     public static final String BASE_PATH = HDFS + "/user/hdfs/recommend";
 
-    public static final String STEP_1_INPUT_PATH = BASE_PATH;
+//    public static final String STEP_1_INPUT_PATH = BASE_PATH;
     public static final String STEP_1_OUTPUT_PATH = BASE_PATH + "/step1";
 
     public static final String STEP_2_INPUT_PATH = STEP_1_OUTPUT_PATH;
@@ -40,6 +40,10 @@ public class Recommend {
         }
 
         String dataPath = args[1];
+
+        HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, config());
+        hdfs.rmr(BASE_PATH);
+
 
         Step1.run(dataPath);
         Step2.run();

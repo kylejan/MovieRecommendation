@@ -45,16 +45,19 @@ public class Step1 {
         }
     }
 
-    public static void run(String dataPath) throws IOException {
+    public static void run(final String dataPath) throws IOException {
         JobConf conf = Recommend.config();
 
-        final String input = Recommend.STEP_1_INPUT_PATH;
-        final String output = Recommend.STEP_2_OUTPUT_PATH;
+        final String input = dataPath;
+        final String output = Recommend.STEP_1_OUTPUT_PATH;
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
-        hdfs.rmr(input);
-        hdfs.mkdirs(input);
-        hdfs.copyFile(dataPath, input);
+//        hdfs.rmr(input);
+//        hdfs.mkdirs(input);
+//        hdfs.copyFile(dataPath, input);
+
+        hdfs.rmr(output);
+//        hdfs.mkdirs(output);
 
         conf.setMapOutputKeyClass(IntWritable.class);
         conf.setMapOutputValueClass(Text.class);
