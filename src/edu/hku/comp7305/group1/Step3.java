@@ -1,10 +1,16 @@
 package edu.hku.comp7305.group1;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.*;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 import java.io.IOException;
 import java.util.Map;
@@ -16,7 +22,10 @@ import java.util.Map;
 
 public class Step3 {
 
-    public static class Step31_UserVectorSplitterMapper extends MapReduceBase implements Mapper<LongWritable, Text, IntWritable, Text> {
+    public static final String JOB_NAME_1 = "Movie Recommender Step 3_1";
+    public static final String JOB_NAME_2 = "Movie Recommender Step 3_2";
+
+    public static class Step31_UserVectorSplitterMapper extends Mapper<LongWritable, Text, IntWritable, Text> {
         private final static IntWritable k = new IntWritable();
         private final static Text v = new Text();
 
@@ -25,7 +34,7 @@ public class Step3 {
          * Output format: [itemID	userID: rate]
          */
         @Override
-        public void map(LongWritable key, Text values, OutputCollector<IntWritable, Text> output, Reporter reporter) throws IOException {
+        public void map(LongWritable key, Text values, Context context) throws IOException, InterruptedException {
             String[] tokens = Recommend.DELIMITER.split(values.toString());
             for (int i = 1; i < tokens.length; i++) {
                 String[] vector = tokens[i].split(":");
@@ -34,35 +43,40 @@ public class Step3 {
 
                 k.set(itemID);
                 v.set(tokens[0] + ":" + pref);
-                output.collect(k, v);
+                context.write(k, v);
             }
         }
     }
 
-    public static void run1(final String input, final String output) throws IOException {
-        JobConf conf = Recommend.config();
+    public static void run1(final String input, final String output) throws IOException, InterruptedException, ClassNotFoundException {
+//        JobConf conf = Recommend.config();
+
+        Configuration conf = new Configuration();
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);
 
-        conf.setOutputKeyClass(IntWritable.class);
-        conf.setOutputValueClass(Text.class);
+        Job job = Job.getInstance(conf, Step3.JOB_NAME_1);
+        job.setJarByClass(Step3.class);
 
-        conf.setMapperClass(Step31_UserVectorSplitterMapper.class);
+        job.setOutputKeyClass(IntWritable.class);
+        job.setOutputValueClass(Text.class);
 
-        conf.setInputFormat(TextInputFormat.class);
-        conf.setOutputFormat(TextOutputFormat.class);
+        job.setMapperClass(Step31_UserVectorSplitterMapper.class);
 
-        FileInputFormat.setInputPaths(conf, new Path(input));
-        FileOutputFormat.setOutputPath(conf, new Path(output));
+        job.setInputFormatClass(TextInputFormat.class);
+        job.setOutputFormatClass(TextOutputFormat.class);
 
-        RunningJob job = JobClient.runJob(conf);
-        while (!job.isComplete()) {
-            job.waitForCompletion();
-        }
+        FileInputFormat.setInputPaths(job, new Path(input));
+        FileOutputFormat.setOutputPath(job, new Path(output));
+
+//        RunningJob job = JobClient.runJob(conf);
+//        while (!job.isComplete()) {
+        job.waitForCompletion(true);
+//        }
     }
 
-    public static class Step32_CooccurrenceColumnWrapperMapper extends MapReduceBase implements Mapper<LongWritable, Text, Text, IntWritable> {
+    public static class Step32_CooccurrenceColumnWrapperMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
         private final static Text k = new Text();
         private final static IntWritable v = new IntWritable();
 
@@ -70,35 +84,41 @@ public class Step3 {
          * Get similarity.
          */
         @Override
-        public void map(LongWritable key, Text values, OutputCollector<Text, IntWritable> output, Reporter reporter) throws IOException {
+        public void map(LongWritable key, Text values, Context output) throws IOException, InterruptedException {
             String[] tokens = Recommend.DELIMITER.split(values.toString());
             k.set(tokens[0]);
             v.set(Integer.parseInt(tokens[1]));
-            output.collect(k, v);
+            output.write(k, v);
         }
     }
 
-    public static void run2(final String input, final String output) throws IOException {
-        JobConf conf = Recommend.config();
+    public static void run2(final String input, final String output) throws IOException, InterruptedException, ClassNotFoundException {
+//        JobConf conf = Recommend.config();
+
+        Configuration conf = new Configuration();
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);
 
-        conf.setOutputKeyClass(Text.class);
-        conf.setOutputValueClass(IntWritable.class);
+        Job job = Job.getInstance(conf, Step3.JOB_NAME_2);
+        job.setJarByClass(Step3.class);
 
-        conf.setMapperClass(Step32_CooccurrenceColumnWrapperMapper.class);
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
 
-        conf.setInputFormat(TextInputFormat.class);
-        conf.setOutputFormat(TextOutputFormat.class);
+        job.setMapperClass(Step32_CooccurrenceColumnWrapperMapper.class);
 
-        FileInputFormat.setInputPaths(conf, new Path(input));
-        FileOutputFormat.setOutputPath(conf, new Path(output));
+        job.setInputFormatClass(TextInputFormat.class);
+        job.setOutputFormatClass(TextOutputFormat.class);
 
-        RunningJob job = JobClient.runJob(conf);
-        while (!job.isComplete()) {
-            job.waitForCompletion();
-        }
+        FileInputFormat.setInputPaths(job, new Path(input));
+        FileOutputFormat.setOutputPath(job, new Path(output));
+
+//        RunningJob job = JobClient.runJob(conf);
+//        while (!job.isComplete()) {
+//            job.waitForCompletion();
+//        }
+        job.waitForCompletion(true);
     }
 
 }

@@ -64,13 +64,4 @@ public class Recommend {
         System.exit(0);
     }
 
-    public static JobConf config() {
-        JobConf conf = new JobConf(Recommend.class);
-        conf.setJobName(Recommend.JOB_NAME);
-        conf.addResource("classpath:/hadoop/core-site.xml");
-        conf.addResource("classpath:/hadoop/hdfs-site.xml");
-        conf.addResource("classpath:/hadoop/mapred-site.xml");
-        return conf;
-    }
-
 }

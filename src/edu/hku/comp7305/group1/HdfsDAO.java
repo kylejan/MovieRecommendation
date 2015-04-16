@@ -18,7 +18,7 @@ import org.apache.hadoop.mapred.JobConf;
 
 public class HdfsDAO {
 
-    private static final String HDFS = "hdfs://192.168.1.210:9000/";
+    private static final String HDFS = "hdfs://student3-x1:9000/";
     private String hdfsPath;
     private Configuration conf;
     
@@ -29,22 +29,6 @@ public class HdfsDAO {
     public HdfsDAO(String hdfs, Configuration conf) {
         this.hdfsPath = hdfs;
         this.conf = conf;
-    }
-
-    public static void main(String[] args) throws IOException {
-        JobConf conf = config();
-        HdfsDAO hdfs = new HdfsDAO(conf);
-        hdfs.copyFile("datafile/item.csv", "/tmp/new");
-        hdfs.ls("/tmp/new");
-    }
-
-    public static JobConf config(){
-        JobConf conf = new JobConf(HdfsDAO.class);
-        conf.setJobName("HdfsDAO");
-        conf.addResource("classpath:/hadoop/core-site.xml");
-        conf.addResource("classpath:/hadoop/hdfs-site.xml");
-        conf.addResource("classpath:/hadoop/mapred-site.xml");
-        return conf;
     }
 
     public void mkdirs(String folder) throws IOException {

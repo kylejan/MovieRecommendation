@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -23,6 +23,8 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
  * Use user_ID as the indicator and map the <item_ID, rate> accordingly. 
  */
 public class Step4 {
+
+    public static final String JOB_NAME = "Movie Recommender Step 4";
 
     public static class Step4_PartialMultiplyMapper extends Mapper<LongWritable, Text, Text, Text> {
 
@@ -121,12 +123,16 @@ public class Step4 {
 
     public static void run(final String input1, final String input2, final String output)
             throws IOException, InterruptedException, ClassNotFoundException {
-        JobConf conf = Recommend.config();
+//        JobConf conf = Recommend.config();
+
+        Configuration conf = new Configuration();
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);
 
-        Job job = new Job(conf);
+//        Job job = new Job(conf);
+
+        Job job = Job.getInstance(conf, Step4.JOB_NAME);
         job.setJarByClass(Step4.class);
 
         job.setOutputKeyClass(Text.class);

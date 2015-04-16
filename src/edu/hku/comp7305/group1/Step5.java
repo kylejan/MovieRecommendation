@@ -12,7 +12,6 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.tools.GetConf;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -75,7 +74,7 @@ public class Step5 {
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);
         
-        Job job = Job.getInstance(conf, Recommend.JOB_NAME);
+        Job job = Job.getInstance(conf, "Movie Recommender Step 5");
         job.setJarByClass(Step5.class);
 
         job.setOutputKeyClass(Text.class);
