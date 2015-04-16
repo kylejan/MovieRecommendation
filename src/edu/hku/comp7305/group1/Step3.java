@@ -30,11 +30,11 @@ public class Step3 {
         }
     }
 
-    public static void run1(Map<String, String> path) throws IOException {
+    public static void run1() throws IOException {
         JobConf conf = Recommend.config();
 
-        String input = path.get("Step3Input1");
-        String output = path.get("Step3Output1");
+        final String input = Recommend.STEP_3_1_INPUT_PATH;
+        final String output = Recommend.STEP_3_1_OUTPUT_PATH;
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);
@@ -69,11 +69,11 @@ public class Step3 {
         }
     }
 
-    public static void run2(Map<String, String> path) throws IOException {
+    public static void run2() throws IOException {
         JobConf conf = Recommend.config();
 
-        String input = path.get("Step3Input2");
-        String output = path.get("Step3Output2");
+        final String input = Recommend.STEP_3_2_INPUT_PATH;
+        final String output = Recommend.STEP_3_2_OUTPUT_PATH;
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);

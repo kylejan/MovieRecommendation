@@ -12,26 +12,43 @@ public class Recommend {
     public static final String HDFS = "hdfs://student3-x1:9000";
     public static final Pattern DELIMITER = Pattern.compile("[\t,]");
 
-    public static void main(String[] args) throws Exception {
-        Map<String, String> path = new HashMap<String, String>();
-        path.put("data", "logfile/small.csv");
-        path.put("Step1Input", HDFS + "/user/hdfs/recommend");
-        path.put("Step1Output", path.get("Step1Input") + "/step1");
-        path.put("Step2Input", path.get("Step1Output"));
-        path.put("Step2Output", path.get("Step1Input") + "/step2");
-        path.put("Step3Input1", path.get("Step1Output"));
-        path.put("Step3Output1", path.get("Step1Input") + "/step3_1");
-        path.put("Step3Input2", path.get("Step2Output"));
-        path.put("Step3Output2", path.get("Step1Input") + "/step3_2");
-        path.put("Step4Input1", path.get("Step3Output1"));
-        path.put("Step4Input2", path.get("Step3Output2"));
-        path.put("Step4Output", path.get("Step1Input") + "/step4");
+    public static final String BASE_PATH = HDFS + "/user/hdfs/recommend";
 
-        Step1.run(path);
-        Step2.run(path);
-        Step3.run1(path);
-        Step3.run2(path);
-        Step4.run(path);
+    public static final String STEP_1_INPUT_PATH = BASE_PATH;
+    public static final String STEP_1_OUTPUT_PATH = BASE_PATH + "/step1";
+
+    public static final String STEP_2_INPUT_PATH = STEP_1_OUTPUT_PATH;
+    public static final String STEP_2_OUTPUT_PATH = BASE_PATH + "/step2";
+
+    public static final String STEP_3_1_INPUT_PATH = STEP_1_OUTPUT_PATH;
+    public static final String STEP_3_1_OUTPUT_PATH = BASE_PATH + "/step3_1";
+
+    public static final String STEP_3_2_INPUT_PATH = STEP_2_OUTPUT_PATH;
+    public static final String STEP_3_2_OUTPUT_PATH = BASE_PATH + "/step3_2";
+
+    public static final String STEP_5_1_INPUT_PATH = STEP_3_1_OUTPUT_PATH;
+    public static final String STEP_5_2_INPUT_PATH = STEP_3_2_OUTPUT_PATH;
+    public static final String STEP_5_OUTPUT_PATH = BASE_PATH + "/step5";
+
+    public static final String STEP_6_INPUT_PATH = STEP_5_OUTPUT_PATH;
+    public static final String STEP_6_OUTPUT_PATH = BASE_PATH + "/step6";
+
+    public static void main(String[] args) throws Exception {
+        if (args.length < 2) {
+            System.err.println("Need to specify data path");
+            System.exit(1);
+        }
+
+        String dataPath = args[1];
+
+        Step1.run(dataPath);
+        Step2.run();
+        Step3.run1();
+        Step3.run2();
+
+        Step4_Update.run();
+        Step4_Update2.run();
+
         System.exit(0);
     }
 

@@ -81,9 +81,9 @@ public class Step4 {
     public static void run(Map<String, String> path) throws IOException {
         JobConf conf = Recommend.config();
 
-        String input1 = path.get("Step4Input1");
-        String input2 = path.get("Step4Input2");
-        String output = path.get("Step4Output");
+        final String input1 = path.get("Step4Input1");
+        final String input2 = path.get("Step4Input2");
+        final String output = path.get("Step4Output");
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);
