@@ -30,17 +30,17 @@ public class Step1 {
 
     public static final String JOB_NAME = "Movie Recommender Step 1";
 
-    public static class Step1_ToItemPreMapper extends Mapper<Object, Text, IntWritable, Text> {
+    public static class Step1_ToItemPreMapper extends Mapper<Object, Text, Text, Text> {
     	/**
     	 * Map to get the pair of (user, <itemID: rate>).
     	 */
-        private final static IntWritable k = new IntWritable();
+        private final static Text k = new Text();
         private final static Text v = new Text();									// The class Text is like Object.
 
         @Override
         public void map(Object key, Text value, Context output) throws IOException, InterruptedException {
             String[] tokens = Recommend.DELIMITER.split(value.toString());			// Split all the records by using the parameter in Pattern.split(regex). 
-            int userID = Integer.parseInt(tokens[0]);								// In one token, the first item that is split out is the userID.
+            String userID = tokens[0];								// In one token, the first item that is split out is the userID.
             String itemID = tokens[1];												// Then the second one is itemID.
             String pref = tokens[2];												// The last one is the preference(rate). 
             k.set(userID);
@@ -49,17 +49,17 @@ public class Step1 {
         }
     }
 
-    public static class Step1_ToUserVectorReducer extends Reducer<IntWritable, Text, IntWritable, Text> {
+    public static class Step1_ToUserVectorReducer extends Reducer<Text, Text, Text, Text> {
         private final static Text v = new Text();
 
         @Override
-        protected void reduce(IntWritable intWritable, Iterable<Text> iterator, Context context) throws IOException, InterruptedException {
+        protected void reduce(Text userID, Iterable<Text> iterator, Context context) throws IOException, InterruptedException {
             StringBuilder sb = new StringBuilder();									// Like "string + string" but with higher efficiency.
             for (Text x : iterator) {
                 sb.append("," + x);									// Append the <item, rate> pair that with the same userID.
             }
             v.set(sb.toString().replaceFirst(",", ""));								// Delete the first ",".
-            context.write(intWritable, v);
+            context.write(userID, v);
         }
     }
 
@@ -77,10 +77,10 @@ public class Step1 {
         Job job = Job.getInstance(conf, Step1.JOB_NAME);
         job.setJarByClass(Step1.class);
 
-        job.setMapOutputKeyClass(IntWritable.class);
+        job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
 
-        job.setOutputKeyClass(IntWritable.class);
+        job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
         job.setMapperClass(Step1_ToItemPreMapper.class);
