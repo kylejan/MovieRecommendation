@@ -19,8 +19,8 @@ public class Recommend {
             System.exit(1);
         }
 
-        final String dataPath = HDFS + args[1];
-        final String outputPath = HDFS + args[2];
+        final String dataPath = HDFS + args[0];
+        final String outputPath = HDFS + args[1];
 
         {
             // Ensure the output is not exists
