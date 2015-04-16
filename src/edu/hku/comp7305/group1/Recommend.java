@@ -10,12 +10,12 @@ import java.util.regex.Pattern;
 public class Recommend {
 
     public static final String HDFS = "hdfs://student3-x1:9000";					// HDFS master address
-    public static final Pattern DELIMITER = Pattern.compile("[\t,]");				// Get the delimiter of the .csv file by recognizing TABs.(Need to change it to [\n]. ) 
+    public static final Pattern DELIMITER = Pattern.compile("[\t,]");				// Get the delimiter of the .csv file by recognizing TABs.  
 
     public static void main(String[] args) throws Exception {
         if (args.length < 2) {
             System.err.println("Need to specify `data path` and `output path` in HDFS");
-            System.err.println("\tFor example: /MovieRecomDataSource /MovieRecomResult");
+            System.err.println("For example: /MovieRecomDataSource /MovieRecomResult");
             System.err.println("Got " + Arrays.asList(args));
             System.exit(1);
         }

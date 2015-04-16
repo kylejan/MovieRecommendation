@@ -9,8 +9,11 @@ import org.apache.hadoop.mapred.*;
 import java.io.IOException;
 import java.util.Map;
 /**
+ * 
+ * @author aohuijun
  * Merge the itemCooccurrenceMatrix and splitUserVector by matrix multiplication. 
  */
+
 public class Step3 {
 
     public static class Step31_UserVectorSplitterMapper extends MapReduceBase implements Mapper<LongWritable, Text, IntWritable, Text> {

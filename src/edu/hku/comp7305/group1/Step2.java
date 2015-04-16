@@ -10,10 +10,10 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 /**
- * Created by zonyitoo on 14/4/15.
+ * 
+ * @author aohuijun
  * Use the userVectors(user-item matrix) to get itemCooccurRenceMatrix. 
  */
-
 public class Step2 {
     public static class Step2_UserVectorToCooccurrenceMapper extends MapReduceBase implements Mapper<LongWritable, Text, Text, IntWritable> {
         private final static Text k = new Text();

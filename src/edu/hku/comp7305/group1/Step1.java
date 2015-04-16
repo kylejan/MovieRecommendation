@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 /**
+ * 
+ * @author aohuijun
  * Use user_ID as the indicator and map the <item_ID, rate> accordingly. 
  */
 public class Step1 {
