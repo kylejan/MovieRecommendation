@@ -59,7 +59,7 @@ public class Step1 {
      * FIRST ROUND MAPREDUCE EXECUTION: run for getting the whole user-item matrix. 
      */
     public static void run(final String input, final String output) throws IOException {
-        JobConf conf = Recommend.config("MovieRecommender Step1");
+        JobConf conf = Recommend.config();
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);

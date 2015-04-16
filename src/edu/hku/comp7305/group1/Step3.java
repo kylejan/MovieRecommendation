@@ -40,7 +40,7 @@ public class Step3 {
     }
 
     public static void run1(final String input, final String output) throws IOException {
-        JobConf conf = Recommend.config("MovieRecommender Step3_1");
+        JobConf conf = Recommend.config();
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);
@@ -79,7 +79,7 @@ public class Step3 {
     }
 
     public static void run2(final String input, final String output) throws IOException {
-        JobConf conf = Recommend.config("MovieRecommender Step3_2");
+        JobConf conf = Recommend.config();
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);

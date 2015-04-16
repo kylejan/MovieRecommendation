@@ -1,5 +1,6 @@
 package edu.hku.comp7305.group1;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapred.JobConf;
 
 import java.util.Arrays;
@@ -11,6 +12,8 @@ public class Recommend {
 
     public static final String HDFS = "hdfs://student3-x1:9000";					// HDFS master address
     public static final Pattern DELIMITER = Pattern.compile("[\t,]");				// Get the delimiter of the .csv file by recognizing TABs.  
+
+    public static final String JOB_NAME = "MovieRecommend";
 
     public static void main(String[] args) throws Exception {
         if (args.length < 2) {
@@ -25,7 +28,7 @@ public class Recommend {
 
         {
             // Ensure the output is not exists
-            HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, config("MovieRecommender"));
+            HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, new Configuration());
             hdfs.rmr(outputPath);
         }
 
@@ -61,9 +64,9 @@ public class Recommend {
         System.exit(0);
     }
 
-    public static JobConf config(final String jobName) {
+    public static JobConf config() {
         JobConf conf = new JobConf(Recommend.class);
-        conf.setJobName(jobName);													//IMPORTANT: set job's name in order to track and manage. 
+        conf.setJobName(Recommend.JOB_NAME);
         conf.addResource("classpath:/hadoop/core-site.xml");
         conf.addResource("classpath:/hadoop/hdfs-site.xml");
         conf.addResource("classpath:/hadoop/mapred-site.xml");

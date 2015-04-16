@@ -121,7 +121,7 @@ public class Step4 {
 
     public static void run(final String input1, final String input2, final String output)
             throws IOException, InterruptedException, ClassNotFoundException {
-        JobConf conf = Recommend.config("MovieRecommender Step4");
+        JobConf conf = Recommend.config();
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);

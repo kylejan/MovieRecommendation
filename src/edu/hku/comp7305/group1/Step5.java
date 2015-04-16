@@ -74,9 +74,8 @@ public class Step5 {
     	Configuration conf = new Configuration();
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);
-
         
-        Job job = Job.getInstance(conf, "MovieRecommender Step5");
+        Job job = Job.getInstance(conf, Recommend.JOB_NAME);
         job.setJarByClass(Step5.class);
 
         job.setOutputKeyClass(Text.class);
