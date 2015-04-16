@@ -3,6 +3,7 @@ package edu.hku.comp7305.group1;
 
 import org.apache.hadoop.mapred.JobConf;
 
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 public class Recommend {
@@ -11,9 +12,10 @@ public class Recommend {
     public static final Pattern DELIMITER = Pattern.compile("[\t,]");
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 3) {
+        if (args.length < 2) {
             System.err.println("Need to specify `data path` and `output path` in HDFS");
-            System.err.println("For example: /MovieRecomDataSource /MovieRecomResult");
+            System.err.println("\tFor example: /MovieRecomDataSource /MovieRecomResult");
+            System.err.println("Got " + Arrays.asList(args));
             System.exit(1);
         }
 
