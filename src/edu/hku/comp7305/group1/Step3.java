@@ -8,13 +8,19 @@ import org.apache.hadoop.mapred.*;
 
 import java.io.IOException;
 import java.util.Map;
-
+/**
+ * Merge the itemCooccurrenceMatrix and splitUserVector by matrix multiplication. 
+ */
 public class Step3 {
 
     public static class Step31_UserVectorSplitterMapper extends MapReduceBase implements Mapper<LongWritable, Text, IntWritable, Text> {
         private final static IntWritable k = new IntWritable();
         private final static Text v = new Text();
 
+        /**
+         * Split the user-item matrix into individual userVector. 
+         * Output format: [itemID	userID: rate]
+         */
         @Override
         public void map(LongWritable key, Text values, OutputCollector<IntWritable, Text> output, Reporter reporter) throws IOException {
             String[] tokens = Recommend.DELIMITER.split(values.toString());
@@ -57,6 +63,9 @@ public class Step3 {
         private final static Text k = new Text();
         private final static IntWritable v = new IntWritable();
 
+        /**
+         * Get similarity.
+         */
         @Override
         public void map(LongWritable key, Text values, OutputCollector<Text, IntWritable> output, Reporter reporter) throws IOException {
             String[] tokens = Recommend.DELIMITER.split(values.toString());

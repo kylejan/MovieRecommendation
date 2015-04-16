@@ -1,14 +1,15 @@
 package edu.hku.comp7305.group1;
 
-
 import org.apache.hadoop.mapred.JobConf;
 
 import java.util.regex.Pattern;
-
+/**
+ * The main program of the movie recommendation project. 
+ */
 public class Recommend {
 
-    public static final String HDFS = "hdfs://student3-x1:9000";
-    public static final Pattern DELIMITER = Pattern.compile("[\t,]");
+    public static final String HDFS = "hdfs://student3-x1:9000";					// HDFS master address
+    public static final Pattern DELIMITER = Pattern.compile("[\t,]");				// Get the delimiter of the .csv file by recognizing TABs.(Need to change it to [\n]. ) 
 
     public static void main(String[] args) throws Exception {
         if (args.length < 3) {
@@ -60,7 +61,7 @@ public class Recommend {
 
     public static JobConf config(final String jobName) {
         JobConf conf = new JobConf(Recommend.class);
-        conf.setJobName(jobName);
+        conf.setJobName(jobName);													//IMPORTANT: set job's name in order to track and manage. 
         conf.addResource("classpath:/hadoop/core-site.xml");
         conf.addResource("classpath:/hadoop/hdfs-site.xml");
         conf.addResource("classpath:/hadoop/mapred-site.xml");

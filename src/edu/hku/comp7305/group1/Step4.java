@@ -17,9 +17,9 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-
 /**
  * Created by zonyitoo on 16/4/15.
+ * Recommendation getting: matrix multiplication
  */
 public class Step4 {
 

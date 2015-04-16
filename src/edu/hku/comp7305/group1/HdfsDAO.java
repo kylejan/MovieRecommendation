@@ -11,14 +11,17 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.mapred.JobConf;
-
 /**
  * Created by zonyitoo on 14/4/15.
+ * 
  */
+
 public class HdfsDAO {
 
     private static final String HDFS = "hdfs://192.168.1.210:9000/";
-
+    private String hdfsPath;
+    private Configuration conf;
+    
     public HdfsDAO(Configuration conf) {
         this(HDFS, conf);
     }
@@ -27,9 +30,6 @@ public class HdfsDAO {
         this.hdfsPath = hdfs;
         this.conf = conf;
     }
-
-    private String hdfsPath;
-    private Configuration conf;
 
     public static void main(String[] args) throws IOException {
         JobConf conf = config();
