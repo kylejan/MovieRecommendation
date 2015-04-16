@@ -1,3 +1,5 @@
+/** @author kylejan **/
+
 import org.apache.spark._
 
 object SparkDataPreprocess {
@@ -8,14 +10,11 @@ object SparkDataPreprocess {
       System.exit(1)
     }
 
-    def nat(beg: Int): Stream[Int] = beg #:: nat(beg + 1)
-
     val sc = new SparkContext(args(0), "SparkDataPreprocess",
       System.getenv("SPARK_HOME"), SparkContext.jarOfClass(this.getClass).toSeq)
 
     val lines = sc.textFile("hdfs://student3-x1:9000/movies.txt")
 
-    // val partitionsNum = lines.count() / lines.partitions.length
     val partitionsSize = lines.mapPartitions(iter => Array(iter.size).iterator, true).collect()
 
     val linesWithIndex = lines.mapPartitionsWithIndex { (pi, it) => {
@@ -35,15 +34,7 @@ object SparkDataPreprocess {
       newIt
     }}
 
-/*
-    linesWithIndex.collect().foreach{ x => {
-      println(x._1 + " " + x._2)
-    }}
-*/
-
     val splitIndexes = linesWithIndex.filter(lineIndex => lineIndex._1.isEmpty()).map(lineIndex => lineIndex._2)
-
-    //splitIndexes.collect().foreach{ x => println(x) }
 
     val contentLines = linesWithIndex.filter(lineIndex => !(lineIndex._1.isEmpty()))
 
@@ -54,14 +45,6 @@ object SparkDataPreprocess {
     }
 
     val groups = contentLines.groupBy(groupfunc)
-
-/*
-    groups.collect().foreach{ x => {
-      x._2.foreach{ y => println(y._1) } 
-      }
-      println("------------------")
-    }
-*/
 
     def fieldValue(ele: Iterable[(String, Long)]): String = {
       var str = ""
@@ -79,7 +62,6 @@ object SparkDataPreprocess {
     val stringGroups = groups.map(group => fieldValue(group._2))
 
     stringGroups.saveAsTextFile("formatInputData")
-    //stringGroups.collect().foreach {x => println(x + "\n") }
   }
 }
 
