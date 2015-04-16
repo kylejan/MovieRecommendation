@@ -17,9 +17,9 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
-public class Step4_Update2 {
+public class Step5 {
 
-    public static class Step4_RecommendMapper extends Mapper<LongWritable, Text, Text, Text> {
+    public static class Step5_RecommendMapper extends Mapper<LongWritable, Text, Text, Text> {
 
         @Override
         public void map(LongWritable key, Text values, Context context) throws IOException, InterruptedException {
@@ -30,7 +30,7 @@ public class Step4_Update2 {
         }
     }
 
-    public static class Step4_RecommendReducer extends Reducer<Text, Text, Text, Text> {
+    public static class Step5_RecommendReducer extends Reducer<Text, Text, Text, Text> {
 
         @Override
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
@@ -60,23 +60,20 @@ public class Step4_Update2 {
         }
     }
 
-    public static void run() throws IOException, InterruptedException, ClassNotFoundException {
-        JobConf conf = Recommend.config();
-
-        final String input = Recommend.STEP_6_INPUT_PATH;
-        final String output = Recommend.STEP_6_OUTPUT_PATH;
+    public static void run(final String input, final String output) throws IOException, InterruptedException, ClassNotFoundException {
+        JobConf conf = Recommend.config("MovieRecommender Step5");
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);
 
         Job job = new Job(conf);
-        job.setJarByClass(Step4_Update2.class);
+        job.setJarByClass(Step5.class);
 
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
-        job.setMapperClass(Step4_Update2.Step4_RecommendMapper.class);
-        job.setReducerClass(Step4_Update2.Step4_RecommendReducer.class);
+        job.setMapperClass(Step5_RecommendMapper.class);
+        job.setReducerClass(Step5_RecommendReducer.class);
 
         job.setInputFormatClass(TextInputFormat.class);
         job.setOutputFormatClass(TextOutputFormat.class);

@@ -30,11 +30,8 @@ public class Step3 {
         }
     }
 
-    public static void run1() throws IOException {
-        JobConf conf = Recommend.config();
-
-        final String input = Recommend.STEP_3_1_INPUT_PATH;
-        final String output = Recommend.STEP_3_1_OUTPUT_PATH;
+    public static void run1(final String input, final String output) throws IOException {
+        JobConf conf = Recommend.config("MovieRecommender Step3_1");
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);
@@ -69,11 +66,8 @@ public class Step3 {
         }
     }
 
-    public static void run2() throws IOException {
-        JobConf conf = Recommend.config();
-
-        final String input = Recommend.STEP_3_2_INPUT_PATH;
-        final String output = Recommend.STEP_3_2_OUTPUT_PATH;
+    public static void run2(final String input, final String output) throws IOException {
+        JobConf conf = Recommend.config("MovieRecommender Step3_2");
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);

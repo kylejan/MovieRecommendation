@@ -46,11 +46,8 @@ public class Step2 {
         }
     }
 
-    public static void run() throws IOException {
-        JobConf conf = Recommend.config();
-
-        final String input = Recommend.STEP_2_INPUT_PATH;
-        final String output = Recommend.STEP_2_OUTPUT_PATH;
+    public static void run(final String input, final String output) throws IOException {
+        JobConf conf = Recommend.config("MovieRecommender Step2");
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);

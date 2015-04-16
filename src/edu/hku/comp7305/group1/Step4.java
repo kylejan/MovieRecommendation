@@ -1,148 +1,140 @@
 package edu.hku.comp7305.group1;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.*;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
-import java.io.IOException;
-import java.util.*;
-
+/**
+ * Created by zonyitoo on 16/4/15.
+ */
 public class Step4 {
 
-    public static class Step4_PartialMultiplyMapper extends MapReduceBase implements Mapper<LongWritable, Text, IntWritable, Text> {
-        private final static IntWritable k = new IntWritable();
-        private final static Text v = new Text();
+    public static class Step4_PartialMultiplyMapper extends Mapper<LongWritable, Text, Text, Text> {
 
-        private final static Map<Integer, List> cooccurrenceMatrix = new HashMap<Integer, List>();
+        private String flag;// A同现矩阵 or B评分矩阵
 
         @Override
-        public void map(LongWritable key, Text values, OutputCollector<IntWritable, Text> output, Reporter reporter) throws IOException {
+        protected void setup(Context context) throws IOException, InterruptedException {
+            FileSplit split = (FileSplit) context.getInputSplit();
+            flag = split.getPath().getParent().getName();// 判断读的数据集
+
+            // System.out.println(flag);
+        }
+
+        @Override
+        public void map(LongWritable key, Text values, Context context) throws IOException, InterruptedException {
             String[] tokens = Recommend.DELIMITER.split(values.toString());
 
-            String[] v1 = tokens[0].split(":");
-            String[] v2 = tokens[1].split(":");
+            if (flag.equals("step3_2")) {// 同现矩阵
+                String[] v1 = tokens[0].split(":");
+                String itemID1 = v1[0];
+                String itemID2 = v1[1];
+                String num = tokens[1];
 
-            if (v1.length > 1) {// cooccurrence
-                int itemID1 = Integer.parseInt(v1[0]);
-                int itemID2 = Integer.parseInt(v1[1]);
-                int num = Integer.parseInt(tokens[1]);
+                Text k = new Text(itemID1);
+                Text v = new Text("A:" + itemID2 + "," + num);
 
-                List list = null;
-                if (!cooccurrenceMatrix.containsKey(itemID1)) {
-                    list = new ArrayList();
-                } else {
-                    list = cooccurrenceMatrix.get(itemID1);
-                }
-                list.add(new Cooccurrence(itemID1, itemID2, num));
-                cooccurrenceMatrix.put(itemID1, list);
-            }
+                context.write(k, v);
+                // System.out.println(k.toString() + "  " + v.toString());
 
-            if (v2.length > 1) {// userVector
-                int itemID = Integer.parseInt(tokens[0]);
-                int userID = Integer.parseInt(v2[0]);
-                double pref = Double.parseDouble(v2[1]);
-                k.set(userID);
-                for (Object obj : cooccurrenceMatrix.get(itemID)) {
-                    Cooccurrence co = (Cooccurrence) obj;
-                    v.set(co.getItemID2() + "," + pref * co.getNum());
-                    output.collect(k, v);
-                }
+            } else if (flag.equals("step3_1")) {// 评分矩阵
+                String[] v2 = tokens[1].split(":");
+                String itemID = tokens[0];
+                String userID = v2[0];
+                String pref = v2[1];
 
+                Text k = new Text(itemID);
+                Text v = new Text("B:" + userID + "," + pref);
+
+                context.write(k, v);
+                // System.out.println(k.toString() + "  " + v.toString());
             }
         }
+
     }
 
-    public static class Step4_AggregateAndRecommendReducer extends MapReduceBase implements Reducer<IntWritable, Text, IntWritable, Text> {
-        private final static Text v = new Text();
+    public static class Step4_AggregateReducer extends Reducer<Text, Text, Text, Text> {
 
         @Override
-        public void reduce(IntWritable key, Iterator<Text> values, OutputCollector<IntWritable, Text> output, Reporter reporter) throws IOException {
-            Map<String, Double> result = new HashMap<String, Double>();
-            while (values.hasNext()) {
-                String[] str = values.next().toString().split(",");
-                if (result.containsKey(str[0])) {
-                    result.put(str[0], result.get(str[0]) + Double.parseDouble(str[1]));
-                } else {
-                    result.put(str[0], Double.parseDouble(str[1]));
+        public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+            System.out.println(key.toString() + ":");
+
+            Map<String, String> mapA = new HashMap<String, String>();
+            Map<String, String> mapB = new HashMap<String, String>();
+
+            for (Text line : values) {
+                String val = line.toString();
+                System.out.println(val);
+
+                if (val.startsWith("A:")) {
+                    String[] kv = Recommend.DELIMITER.split(val.substring(2));
+                    mapA.put(kv[0], kv[1]);
+
+                } else if (val.startsWith("B:")) {
+                    String[] kv = Recommend.DELIMITER.split(val.substring(2));
+                    mapB.put(kv[0], kv[1]);
+
                 }
             }
-            Iterator iter = result.keySet().iterator();
+
+            double result = 0;
+            Iterator<String> iter = mapA.keySet().iterator();
             while (iter.hasNext()) {
-                String itemID = (String) iter.next();
-                double score = result.get(itemID);
-                v.set(itemID + "," + score);
-                output.collect(key, v);
+                String mapk = iter.next();// itemID
+
+                int num = Integer.parseInt(mapA.get(mapk));
+                Iterator<String> iterb = mapB.keySet().iterator();
+                while (iterb.hasNext()) {
+                    String mapkb = iterb.next();// userID
+                    double pref = Double.parseDouble(mapB.get(mapkb));
+                    result = num * pref;// 矩阵乘法相乘计算
+
+                    Text k = new Text(mapkb);
+                    Text v = new Text(mapk + "," + result);
+                    context.write(k, v);
+                    System.out.println(k.toString() + "  " + v.toString());
+                }
             }
         }
     }
 
-    public static void run(Map<String, String> path) throws IOException {
-        JobConf conf = Recommend.config();
-
-        final String input1 = path.get("Step4Input1");
-        final String input2 = path.get("Step4Input2");
-        final String output = path.get("Step4Output");
+    public static void run(final String input1, final String input2, final String output)
+            throws IOException, InterruptedException, ClassNotFoundException {
+        JobConf conf = Recommend.config("MovieRecommender Step4");
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);
 
-        conf.setOutputKeyClass(IntWritable.class);
-        conf.setOutputValueClass(Text.class);
+        Job job = new Job(conf);
+        job.setJarByClass(Step4.class);
 
-        conf.setMapperClass(Step4_PartialMultiplyMapper.class);
-        conf.setCombinerClass(Step4_AggregateAndRecommendReducer.class);
-        conf.setReducerClass(Step4_AggregateAndRecommendReducer.class);
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(Text.class);
 
-        conf.setInputFormat(TextInputFormat.class);
-        conf.setOutputFormat(TextOutputFormat.class);
+        job.setMapperClass(Step4.Step4_PartialMultiplyMapper.class);
+        job.setReducerClass(Step4.Step4_AggregateReducer.class);
 
-        FileInputFormat.setInputPaths(conf, new Path(input1), new Path(input2));
-        FileOutputFormat.setOutputPath(conf, new Path(output));
+        job.setInputFormatClass(TextInputFormat.class);
+        job.setOutputFormatClass(TextOutputFormat.class);
 
-        RunningJob job = JobClient.runJob(conf);
-        while (!job.isComplete()) {
-            job.waitForCompletion();
-        }
-    }
+        FileInputFormat.setInputPaths(job, new Path(input1), new Path(input2));
+        FileOutputFormat.setOutputPath(job, new Path(output));
 
-}
-
-class Cooccurrence {
-    private int itemID1;
-    private int itemID2;
-    private int num;
-
-    public Cooccurrence(int itemID1, int itemID2, int num) {
-        super();
-        this.itemID1 = itemID1;
-        this.itemID2 = itemID2;
-        this.num = num;
-    }
-
-    public int getItemID1() {
-        return itemID1;
-    }
-
-    public void setItemID1(int itemID1) {
-        this.itemID1 = itemID1;
-    }
-
-    public int getItemID2() {
-        return itemID2;
-    }
-
-    public void setItemID2(int itemID2) {
-        this.itemID2 = itemID2;
-    }
-
-    public int getNum() {
-        return num;
-    }
-
-    public void setNum(int num) {
-        this.num = num;
+        job.waitForCompletion(true);
     }
 
 }
