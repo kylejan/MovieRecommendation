@@ -26,6 +26,8 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
  */
 public class Step5 {
 
+    public static final String JOB_NAME = Recommend.JOB_NAME;
+
     public static class Step5_RecommendMapper extends Mapper<LongWritable, Text, Text, Text> {
 
         @Override
@@ -74,7 +76,7 @@ public class Step5 {
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);
         
-        Job job = Job.getInstance(conf, "Movie Recommender Step 5");
+        Job job = Job.getInstance(conf, Step5.JOB_NAME);
         job.setJarByClass(Step5.class);
 
         job.setOutputKeyClass(Text.class);

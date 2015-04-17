@@ -23,7 +23,8 @@ import java.util.Map;
  */
 public class Step2 {
 
-    public static final String JOB_NAME = "Movie Recommender Step 2";
+//    public static final String JOB_NAME = "Movie Recommender Step 2";
+    public static final String JOB_NAME = Recommend.JOB_NAME;
 
     public static class Step2_UserVectorToCooccurrenceMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
         private final static Text k = new Text();

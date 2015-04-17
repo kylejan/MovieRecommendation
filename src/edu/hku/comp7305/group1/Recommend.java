@@ -1,7 +1,7 @@
 package edu.hku.comp7305.group1;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.mapred.JobConf;
+import org.apache.mahout.cf.taste.hadoop.item.RecommenderJob;
 
 import java.util.Arrays;
 import java.util.regex.Pattern;
@@ -50,16 +50,31 @@ public class Recommend {
         final String step5InputPath = step4OutputPath;
         final String step5OutputPath = outputPath + "/step5";
 
-        Step1.run(dataPath, step1OutputPath);
+//        Step1.run(dataPath, step1OutputPath);
+//
+//        Step2.run(step2InputPath, step2OutputPath);
+//
+//        Step3.run1(step3InputPath1, step3OutputPath1);
+//        Step3.run2(step3InputPath2, step3OutputPath2);
+//
+//        Step4.run(step4InputPath1, step4InputPath2, step4OutputPath);
+//
+//        Step5.run(step5InputPath, step5OutputPath);
 
-        Step2.run(step2InputPath, step2OutputPath);
+        final String tmpPath = HDFS + "/tmp/" + System.currentTimeMillis();
+        StringBuilder sb = new StringBuilder();
+        sb.append("--input " + dataPath);
+        sb.append(" --output " + outputPath);
+        sb.append(" --booleanData true");
+        sb.append(" --similarityClassname org.apache.mahout.math.hadoop.similarity.cooccurrence.measures.EuclideanDistanceSimilarity");
+        sb.append(" --tempDir ").append(tmpPath);
 
-        Step3.run1(step3InputPath1, step3OutputPath1);
-        Step3.run2(step3InputPath2, step3OutputPath2);
+        Configuration configuration = new Configuration();
+        RecommenderJob recommenderJob = new RecommenderJob();
+        recommenderJob.setConf(configuration);
 
-        Step4.run(step4InputPath1, step4InputPath2, step4OutputPath);
-
-        Step5.run(step5InputPath, step5OutputPath);
+        String[] recommenderJobArgv = sb.toString().split(" ");
+        recommenderJob.run(recommenderJobArgv);
 
         System.exit(0);
     }

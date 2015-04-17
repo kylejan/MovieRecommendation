@@ -60,5 +60,38 @@
         <jarDirectory url="file://$USER_HOME$/Projects/hadoop-2.6.0/share/hadoop/common/lib" recursive="false" type="SOURCES" />
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$USER_HOME$/Projects/mahout-distribution-0.10.0" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="file://$USER_HOME$/Projects/mahout-distribution-0.10.0/docs/mahout-examples" />
+          <root url="file://$USER_HOME$/Projects/mahout-distribution-0.10.0/docs/mahout-h2o/javadoc" />
+          <root url="file://$USER_HOME$/Projects/mahout-distribution-0.10.0/docs/mahout-hdfs" />
+          <root url="file://$USER_HOME$/Projects/mahout-distribution-0.10.0/docs/mahout-integration" />
+          <root url="file://$USER_HOME$/Projects/mahout-distribution-0.10.0/docs/mahout-math" />
+          <root url="file://$USER_HOME$/Projects/mahout-distribution-0.10.0/docs/mahout-mr" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="file://$USER_HOME$/Projects/mahout-distribution-0.10.0" />
+        </SOURCES>
+        <jarDirectory url="file://$USER_HOME$/Projects/mahout-distribution-0.10.0" recursive="false" />
+        <jarDirectory url="file://$USER_HOME$/Projects/mahout-distribution-0.10.0" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$USER_HOME$/Projects/mahout-distribution-0.10.0/lib" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$USER_HOME$/Projects/mahout-distribution-0.10.0/lib" />
+        </SOURCES>
+        <jarDirectory url="file://$USER_HOME$/Projects/mahout-distribution-0.10.0/lib" recursive="false" />
+        <jarDirectory url="file://$USER_HOME$/Projects/mahout-distribution-0.10.0/lib" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
   </component>
 </module>
