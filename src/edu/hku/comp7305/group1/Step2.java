@@ -3,7 +3,6 @@ package edu.hku.comp7305.group1;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -14,12 +13,10 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
 /**
  * 
  * @author aohuijun
- * Use the userVectors(user-item matrix) to get itemCooccurRenceMatrix. 
+ * Use the userVectors(user-item matrix) to get the similarity matrix called itemCooccurrenceMatrix. 
  */
 public class Step2 {
 
@@ -31,7 +28,13 @@ public class Step2 {
         private final static IntWritable v = new IntWritable(1);
 
         /**
-         * Map by calculating the similarity between two items. 
+         * Calculating situation: get a pair of two items that show up in one user's user-item matrix. 
+         * Result (for each key: userID): 
+         * 			itemID1:itemID2	1
+         * 			itemID1:itemID2	1
+         * 			itemID1:itemTD3	1
+         * 			itemID3:itemID4	1
+         * 			...
          */
         @Override
         public void map(Object key, Text values, Context output) throws IOException, InterruptedException {
@@ -40,7 +43,7 @@ public class Step2 {
                 String itemID = tokens[i].split(":")[0];						// Identifying the ":" to get items-pairs. 
                 for (int j = 1; j < tokens.length; j++) {
                     String itemID2 = tokens[j].split(":")[0];
-                    k.set(itemID + ":" + itemID2);
+                    k.set(itemID + ":" + itemID2);								// Get the pair: <itemID:itemID2> that under the name of the same userID. 
                     output.write(k, v);
                 }
             }
@@ -51,7 +54,13 @@ public class Step2 {
         private IntWritable result = new IntWritable();
 
         /**
-         * Reduce by using mapper's result.
+         * Reduce out the similarity matrix by using all the item pairs results.
+         * Result (regardless the userID): 
+         * 			itemID1:itemID2	(sum1)
+         * 			itemID1:itemID3	(sum2)
+         * 			itemID2:itemID3 (sum3)
+         * 			...
+         * (Notice: the new key is the items pair while the value is the co-occurrence number. )
          */
         @Override
         public void reduce(Text key, Iterable<IntWritable> values, Context output) throws IOException, InterruptedException {
@@ -59,7 +68,7 @@ public class Step2 {
             for (IntWritable value : values) {
                 sum += value.get();
             }
-            result.set(sum);
+            result.set(sum);													// Calculate the sum of the 1s of all same item pairs<itemID:itemID2>.
             output.write(key, result);
         }
     }
@@ -67,11 +76,9 @@ public class Step2 {
     /**
      * SECOND ROUND MAPREDUCE EXECUTION: use user-item matrix to get the entire co-occurrence matrix.
      * 
-     * 
      */
     public static void run(final String input, final String output) throws IOException, InterruptedException, ClassNotFoundException {
         Configuration conf = new Configuration();
-
 //        JobConf conf = Recommend.config();
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);

@@ -5,11 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.security.auth.login.AppConfigurationEntry;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.tools.GetConf;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -42,6 +39,16 @@ public class Step5 {
 
     public static class Step5_RecommendReducer extends Reducer<Text, Text, Text, Text> {
 
+    	/**
+    	 * Get the initial recommendation matrix. 
+    	 * Result: 
+    	 * 			userID1		itemID1,recommendation1
+    	 * 						itemID2,recommendation2
+    	 * 						itemID3,recommendation3
+    	 * 						...
+    	 * 			userID2		itemID1,recommendation1
+    	 * 			...
+    	 */
         @Override
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             System.out.println(key.toString() + ":");

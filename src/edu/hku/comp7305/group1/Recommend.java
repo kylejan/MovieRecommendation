@@ -1,25 +1,27 @@
 package edu.hku.comp7305.group1;
 
 import org.apache.hadoop.conf.Configuration;
+
 import org.apache.mahout.cf.taste.hadoop.item.RecommenderJob;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 /**
- * The main program of the movie recommendation project. 
+ * 
+ * @author aohuijun
+ * The main program of the movie recommendation project.
  */
 public class Recommend {
 
     public static final String HDFS = "hdfs://student3-x1:9000";					// HDFS master address
-    public static final Pattern DELIMITER = Pattern.compile("[\t,]");				// Get the delimiter of the .csv file by recognizing TABs.  
-
+    public static final Pattern DELIMITER = Pattern.compile("[\t,]");				// Get the delimiter of the data file by recognizing TABs.  
     public static final String JOB_NAME = "MovieRecommend";
 
     public static void runOurs(final String dataPath, final String outputPath) throws Exception {
         {
             // Ensure the output is not exists
-            HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, new Configuration());
+            HdfsDAO hdfs = new HdfsDAO(HDFS, new Configuration());
             hdfs.rmr(outputPath);
         }
 
@@ -36,11 +38,15 @@ public class Recommend {
 
         final String step4InputPath1 = step3OutputPath1;
         final String step4InputPath2 = step3OutputPath2;
+//        final String step4InputPath2 = step2OutputPath;
         final String step4OutputPath = outputPath + "/step4";
 
         final String step5InputPath = step4OutputPath;
         final String step5OutputPath = outputPath + "/step5";
 
+        /**
+         * Begin to run all the procedures of the map-reduce method. 
+         */
         Step1.run(dataPath, step1OutputPath);
 
         Step2.run(step2InputPath, step2OutputPath);

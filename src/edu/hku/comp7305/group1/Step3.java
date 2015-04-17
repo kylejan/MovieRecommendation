@@ -13,11 +13,12 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 import java.io.IOException;
-import java.util.Map;
 /**
  * 
  * @author aohuijun
- * Merge the itemCooccurrenceMatrix and splitUserVector by matrix multiplication. 
+ * Switch the previous jobs into: 
+ * 		one set of vectors: the itemCooccurrenceMatrix, and 
+ * 		one vector: splitUserVector comes from user-item matrix. 
  */
 
 public class Step3 {
@@ -34,19 +35,26 @@ public class Step3 {
 
         /**
          * Split the user-item matrix into individual userVector. 
-         * Output format: [itemID	userID: rate]
+         * Result: 
+         * 			itemID1		userID1:score1
+         * 						userID2:score2
+         * 						userID5:score5
+         * 						...
+         * 			itemID2		...
+         * 			...
          */
         @Override
         public void map(LongWritable key, Text values, Context context) throws IOException, InterruptedException {
             String[] tokens = Recommend.DELIMITER.split(values.toString());
             for (int i = 1; i < tokens.length; i++) {
                 String[] vector = tokens[i].split(":");
+
 //                int itemID = Integer.parseInt(vector[0]);
                 String itemID = vector[0];
-                String pref = vector[1];
+                String score = vector[1];
 
                 k.set(itemID);
-                v.set(tokens[0] + ":" + pref);
+                v.set(tokens[0] + ":" + score);
                 context.write(k, v);
             }
         }
@@ -54,7 +62,6 @@ public class Step3 {
 
     public static void run1(final String input, final String output) throws IOException, InterruptedException, ClassNotFoundException {
 //        JobConf conf = Recommend.config();
-
         Configuration conf = new Configuration();
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
@@ -85,7 +92,12 @@ public class Step3 {
         private final static IntWritable v = new IntWritable();
 
         /**
-         * Get similarity.
+         * Get and wrap the similarity result(Seems like copying the result from step2Output by observation). 
+         * Result: 
+         * 			itemID1:itemID2	(sum1)
+         * 			itemID1:itemID3	(sum2)
+         * 			itemID2:itemID3 (sum3)
+         * 			...
          */
         @Override
         public void map(LongWritable key, Text values, Context output) throws IOException, InterruptedException {
@@ -98,7 +110,6 @@ public class Step3 {
 
     public static void run2(final String input, final String output) throws IOException, InterruptedException, ClassNotFoundException {
 //        JobConf conf = Recommend.config();
-
         Configuration conf = new Configuration();
 
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);

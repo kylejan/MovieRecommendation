@@ -4,10 +4,8 @@ package edu.hku.comp7305.group1;
  * Created by zonyitoo on 14/4/15.
  */
 
-import org.apache.commons.lang.UnhandledException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 
 import org.apache.hadoop.mapreduce.Job;
@@ -19,12 +17,10 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
 /**
  * 
  * @author aohuijun
- * Use user_ID as the indicator and map the <item_ID, rate> accordingly. 
+ * Use userID as the indicator and map the <itemID, score> accordingly. 
  */
 public class Step1 {
 
@@ -33,19 +29,23 @@ public class Step1 {
 
     public static class Step1_ToItemPreMapper extends Mapper<Object, Text, Text, Text> {
     	/**
-    	 * Map to get the pair of (user, <itemID: rate>).
+    	 * Map the initial income. 
+    	 * Result: get all the pairs of (userID, <itemID: score>).
     	 */
         private final static Text k = new Text();
         private final static Text v = new Text();									// The class Text is like Object.
 
+        /**
+         * Called once for each key/value pair in the input split.
+         */
         @Override
         public void map(Object key, Text value, Context output) throws IOException, InterruptedException {
             String[] tokens = Recommend.DELIMITER.split(value.toString());			// Split all the records by using the parameter in Pattern.split(regex). 
-            String userID = tokens[0];								// In one token, the first item that is split out is the userID.
+            String userID = tokens[0];												// In one token, the first item that is split out is the userID.
             String itemID = tokens[1];												// Then the second one is itemID.
-            String pref = tokens[2];												// The last one is the preference(rate). 
+            String score = tokens[2];												// The last one is the score. 
             k.set(userID);
-            v.set(itemID + ":" + pref);
+            v.set(itemID + ":" + score);
             output.write(k, v);
         }
     }
@@ -53,11 +53,20 @@ public class Step1 {
     public static class Step1_ToUserVectorReducer extends Reducer<Text, Text, Text, Text> {
         private final static Text v = new Text();
 
+        /**
+         * Get the mapper's result to construct the reduce result. 
+         * Result: a matrix that recorded all the <itemID: score> pairs with the according userID. 
+         * 	for example: 
+         * 			userID1				itemID1:score1	itemID2:score2	...
+         * 			userID2				itemID1:score1	itemID3:score3	...
+         * 			...
+         * 
+         */
         @Override
         protected void reduce(Text userID, Iterable<Text> iterator, Context context) throws IOException, InterruptedException {
             StringBuilder sb = new StringBuilder();									// Like "string + string" but with higher efficiency.
             for (Text x : iterator) {
-                sb.append("," + x);									// Append the <item, rate> pair that with the same userID.
+                sb.append("," + x);													// Append the <item, rate> pair that with the same userID.
             }
             v.set(sb.toString().replaceFirst(",", ""));								// Delete the first ",".
             context.write(userID, v);
@@ -65,18 +74,17 @@ public class Step1 {
     }
 
     /**
-     * FIRST ROUND MAPREDUCE EXECUTION: run for getting the whole user-item matrix. 
+     * FIRST ROUND MAPREDUCE EXECUTION: run for getting the reduced matrix called user-item matrix. 
      */
     public static void run(final String input, final String output) throws IOException, InterruptedException, ClassNotFoundException {
         Configuration conf = new Configuration();
 //        JobConf conf = Recommend.config();
 
-
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);
 
         Job job = Job.getInstance(conf, Step1.JOB_NAME);
-        job.setJarByClass(Step1.class);
+        job.setJarByClass(Step1.class);								// Set the job jar.
 
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
@@ -84,7 +92,7 @@ public class Step1 {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
-        job.setMapperClass(Step1_ToItemPreMapper.class);
+        job.setMapperClass(Step1_ToItemPreMapper.class);			// Here to begin the map-reduce procedures. 
         job.setCombinerClass(Step1_ToUserVectorReducer.class);
         job.setReducerClass(Step1_ToUserVectorReducer.class);
 
