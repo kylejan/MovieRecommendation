@@ -91,11 +91,11 @@ public class Step4 {
                 System.out.println(val);
 
                 if (val.startsWith("Cooccurrence:")) {
-                    String[] kv = Recommend.DELIMITER.split(val.substring(2));
+                    String[] kv = Recommend.DELIMITER.split(val.substring(13));
                     mapA.put(kv[0], kv[1]);
 
                 } else if (val.startsWith("UserRates:")) {
-                    String[] kv = Recommend.DELIMITER.split(val.substring(2));
+                    String[] kv = Recommend.DELIMITER.split(val.substring(10));
                     mapB.put(kv[0], kv[1]);
 
                 }

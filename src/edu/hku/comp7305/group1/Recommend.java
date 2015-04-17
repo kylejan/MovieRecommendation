@@ -81,8 +81,8 @@ public class Recommend {
         final String dataPath = HDFS + args[0];
         final String outputPath = HDFS + args[1];
 
-        runOurs(dataPath, outputPath);
-//        runMahout(dataPath, outputPath);
+//        runOurs(dataPath, outputPath);
+        runMahout(dataPath, outputPath);
 
         System.exit(0);
     }
