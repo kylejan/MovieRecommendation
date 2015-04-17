@@ -23,6 +23,9 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
  */
 public class Step5 {
 
+//    public static final String JOB_NAME = Recommend.JOB_NAME;
+    public static final String JOB_NAME = "Movie Recommender Step 5";
+
     public static class Step5_RecommendMapper extends Mapper<LongWritable, Text, Text, Text> {
 
         @Override
@@ -36,6 +39,16 @@ public class Step5 {
 
     public static class Step5_RecommendReducer extends Reducer<Text, Text, Text, Text> {
 
+    	/**
+    	 * Get the initial recommendation matrix. 
+    	 * Result: 
+    	 * 			userID1		itemID1,recommendation1
+    	 * 						itemID2,recommendation2
+    	 * 						itemID3,recommendation3
+    	 * 						...
+    	 * 			userID2		itemID1,recommendation1
+    	 * 			...
+    	 */
         @Override
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             System.out.println(key.toString() + ":");
@@ -71,7 +84,7 @@ public class Step5 {
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);
         
-        Job job = Job.getInstance(conf, "Movie Recommender Step 5");
+        Job job = Job.getInstance(conf, Step5.JOB_NAME);
         job.setJarByClass(Step5.class);
 
         job.setOutputKeyClass(Text.class);

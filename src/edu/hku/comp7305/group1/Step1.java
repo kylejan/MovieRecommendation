@@ -25,6 +25,7 @@ import java.io.IOException;
 public class Step1 {
 
     public static final String JOB_NAME = "Movie Recommender Step 1";
+//    public static final String JOB_NAME = Recommend.JOB_NAME;
 
     public static class Step1_ToItemPreMapper extends Mapper<Object, Text, Text, Text> {
     	/**
@@ -34,6 +35,9 @@ public class Step1 {
         private final static Text k = new Text();
         private final static Text v = new Text();									// The class Text is like Object.
 
+        /**
+         * Called once for each key/value pair in the input split.
+         */
         @Override
         public void map(Object key, Text value, Context output) throws IOException, InterruptedException {
             String[] tokens = Recommend.DELIMITER.split(value.toString());			// Split all the records by using the parameter in Pattern.split(regex). 

@@ -26,7 +26,10 @@ public class Step3 {
     public static final String JOB_NAME_1 = "Movie Recommender Step 3_1";
     public static final String JOB_NAME_2 = "Movie Recommender Step 3_2";
 
-    public static class Step31_UserVectorSplitterMapper extends Mapper<Text, Text, Text, Text> {
+//    public static final String JOB_NAME_1 = Recommend.JOB_NAME;
+//    public static final String JOB_NAME_2 = Recommend.JOB_NAME;
+
+    public static class Step31_UserVectorSplitterMapper extends Mapper<LongWritable, Text, Text, Text> {
         private final static Text k = new Text();
         private final static Text v = new Text();
 
@@ -41,10 +44,12 @@ public class Step3 {
          * 			...
          */
         @Override
-        public void map(Text key, Text values, Context context) throws IOException, InterruptedException {
+        public void map(LongWritable key, Text values, Context context) throws IOException, InterruptedException {
             String[] tokens = Recommend.DELIMITER.split(values.toString());
             for (int i = 1; i < tokens.length; i++) {
                 String[] vector = tokens[i].split(":");
+
+//                int itemID = Integer.parseInt(vector[0]);
                 String itemID = vector[0];
                 String score = vector[1];
 
@@ -65,7 +70,7 @@ public class Step3 {
         Job job = Job.getInstance(conf, Step3.JOB_NAME_1);
         job.setJarByClass(Step3.class);
 
-        job.setOutputKeyClass(IntWritable.class);
+        job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
         job.setMapperClass(Step31_UserVectorSplitterMapper.class);
@@ -87,7 +92,12 @@ public class Step3 {
         private final static IntWritable v = new IntWritable();
 
         /**
-         * Get and wrap the similarity result, .
+         * Get and wrap the similarity result(Seems like copying the result from step2Output by observation). 
+         * Result: 
+         * 			itemID1:itemID2	(sum1)
+         * 			itemID1:itemID3	(sum2)
+         * 			itemID2:itemID3 (sum3)
+         * 			...
          */
         @Override
         public void map(LongWritable key, Text values, Context output) throws IOException, InterruptedException {
@@ -125,5 +135,4 @@ public class Step3 {
 //        }
         job.waitForCompletion(true);
     }
-
 }

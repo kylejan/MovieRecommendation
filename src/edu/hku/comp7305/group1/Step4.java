@@ -25,6 +25,7 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 public class Step4 {
 
     public static final String JOB_NAME = "Movie Recommender Step 4";
+//    public static final String JOB_NAME = Recommend.JOB_NAME;
 
     public static class Step4_PartialMultiplyMapper extends Mapper<LongWritable, Text, Text, Text> {
 
@@ -39,7 +40,8 @@ public class Step4 {
         }
 
         /**
-         * Map the co-occurrence matrix or the userVector separately. 
+         * Map for further use in multiply. 
+         * TO distinguish the co-occurrence matrix or the userVector separately. 
          */
         @Override
         public void map(LongWritable key, Text values, Context context) throws IOException, InterruptedException {
@@ -55,7 +57,7 @@ public class Step4 {
                 Text v = new Text("Cooccurrence:" + itemID2 + "," + num);
 
                 context.write(k, v);
-                // System.out.println(k.toString() + "  " + v.toString());
+//                System.out.println(k.toString() + "  " + v.toString());
 
             } else if (flag.equals("step3_1")) {								// The input is the userVector instead. 
                 String[] v2 = tokens[1].split(":");
@@ -67,7 +69,7 @@ public class Step4 {
                 Text v = new Text("UserRates:" + userID + "," + pref);
 
                 context.write(k, v);
-                // System.out.println(k.toString() + "  " + v.toString());
+//                System.out.println(k.toString() + "  " + v.toString());
             }
         }
 
@@ -77,6 +79,13 @@ public class Step4 {
 
     	/**
     	 * Get multiplied result. 
+    	 * Result: 
+    	 * 			userID1		itemID1,recommendation1
+    	 * 			userID2		itemID2,recommendation2
+    	 * 			userID1		itemID1,recommendation3
+    	 * 						...
+    	 * 			userID2		itemID1,recommendation1
+    	 * 			...
     	 */
         @Override
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
@@ -115,7 +124,7 @@ public class Step4 {
                     Text k = new Text(mapkb);
                     Text v = new Text(mapk + "," + result);
                     context.write(k, v);
-                    System.out.println(k.toString() + "  " + v.toString());
+//                    System.out.println(k.toString() + "  " + v.toString());
                 }
             }
         }
