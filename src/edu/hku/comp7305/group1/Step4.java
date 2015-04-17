@@ -42,6 +42,7 @@ public class Step4 {
         /**
          * Map for further use in multiply. 
          * TO distinguish the co-occurrence matrix or the userVector separately. 
+         * 
          */
         @Override
         public void map(LongWritable key, Text values, Context context) throws IOException, InterruptedException {
@@ -54,7 +55,7 @@ public class Step4 {
                 String num = tokens[1];
 
                 Text k = new Text(itemID1);
-                Text v = new Text("Cooccurrence:" + itemID2 + "," + num);
+                Text v = new Text("Similarity:" + itemID2 + "," + num);
 
                 context.write(k, v);
 //                System.out.println(k.toString() + "  " + v.toString());
@@ -66,7 +67,7 @@ public class Step4 {
                 String pref = v2[1];
 
                 Text k = new Text(itemID);
-                Text v = new Text("UserRates:" + userID + "," + pref);
+                Text v = new Text("User:" + userID + "," + pref);
 
                 context.write(k, v);
 //                System.out.println(k.toString() + "  " + v.toString());
@@ -98,12 +99,12 @@ public class Step4 {
                 String val = line.toString();
                 System.out.println(val);
 
-                if (val.startsWith("Cooccurrence:")) {
-                    String[] kv = Recommend.DELIMITER.split(val.substring(2));
+                if (val.startsWith("Similarity:")) {
+                    String[] kv = Recommend.DELIMITER.split(val.substring(11));
                     mapA.put(kv[0], kv[1]);
 
-                } else if (val.startsWith("UserRates:")) {
-                    String[] kv = Recommend.DELIMITER.split(val.substring(2));
+                } else if (val.startsWith("User:")) {
+                    String[] kv = Recommend.DELIMITER.split(val.substring(5));
                     mapB.put(kv[0], kv[1]);
 
                 }
