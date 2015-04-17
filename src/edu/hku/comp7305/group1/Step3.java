@@ -22,11 +22,11 @@ import java.util.Map;
 
 public class Step3 {
 
-//    public static final String JOB_NAME_1 = "Movie Recommender Step 3_1";
-//    public static final String JOB_NAME_2 = "Movie Recommender Step 3_2";
+    public static final String JOB_NAME_1 = "Movie Recommender Step 3_1";
+    public static final String JOB_NAME_2 = "Movie Recommender Step 3_2";
 
-    public static final String JOB_NAME_1 = Recommend.JOB_NAME;
-    public static final String JOB_NAME_2 = Recommend.JOB_NAME;
+//    public static final String JOB_NAME_1 = Recommend.JOB_NAME;
+//    public static final String JOB_NAME_2 = Recommend.JOB_NAME;
 
     public static class Step31_UserVectorSplitterMapper extends Mapper<LongWritable, Text, Text, Text> {
         private final static Text k = new Text();

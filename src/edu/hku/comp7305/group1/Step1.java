@@ -28,8 +28,8 @@ import java.util.Map;
  */
 public class Step1 {
 
-//    public static final String JOB_NAME = "Movie Recommender Step 1";
-    public static final String JOB_NAME = Recommend.JOB_NAME;
+    public static final String JOB_NAME = "Movie Recommender Step 1";
+//    public static final String JOB_NAME = Recommend.JOB_NAME;
 
     public static class Step1_ToItemPreMapper extends Mapper<Object, Text, Text, Text> {
     	/**

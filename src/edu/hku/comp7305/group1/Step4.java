@@ -24,8 +24,8 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
  */
 public class Step4 {
 
-//    public static final String JOB_NAME = "Movie Recommender Step 4";
-    public static final String JOB_NAME = Recommend.JOB_NAME;
+    public static final String JOB_NAME = "Movie Recommender Step 4";
+//    public static final String JOB_NAME = Recommend.JOB_NAME;
 
     public static class Step4_PartialMultiplyMapper extends Mapper<LongWritable, Text, Text, Text> {
 

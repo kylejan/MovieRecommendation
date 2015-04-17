@@ -26,7 +26,8 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
  */
 public class Step5 {
 
-    public static final String JOB_NAME = Recommend.JOB_NAME;
+//    public static final String JOB_NAME = Recommend.JOB_NAME;
+    public static final String JOB_NAME = "Movie Recommender Step 5";
 
     public static class Step5_RecommendMapper extends Mapper<LongWritable, Text, Text, Text> {
 
