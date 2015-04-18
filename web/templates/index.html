@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1.0, maximum-scale=2.0">
+
+        <title>Movie Recommendation</title>
+
+        <link rel="stylesheet" type="text/css" href="/static/media/css/jquery.dataTables.css">
+        <link rel="stylesheet" type="text/css" href="/static/resources/syntax/shCore.css">
+        <link rel="stylesheet" type="text/css" href="/static/resources/demo.css">
+
+        <script type="text/javascript" language="javascript" src="/static/media/js/jquery.js"></script>
+        <script type="text/javascript" language="javascript" src="/static/media/js/jquery.dataTables.js"></script>
+        <script type="text/javascript" language="javascript" src="/static/resources/syntax/shCore.js"></script>
+        <script type="text/javascript" language="javascript" src="/static/resources/demo.js"></script>
+        <script type="text/javascript" language="javascript" class="init">
+
+                $(document).ready(function() {
+                        $('#movieTable').dataTable();
+                });
+
+        </script>
+</head>
+
+<body>
+	<div class="container">
+		<section>
+			<h1>Movie Recommendation <span>X version</span></h1>
+
+			<div class="info">
+				<p>Movie recommendation system based on Amazon Movie Reviews. Search for recommended movies and corresponding scores with user ID.</p>
+
+				<br/>
+				<form action="/query" method="get">
+					<input id="userID" type="text" name="userID" placeholder="user id" required />
+					<input id="qrySubmit" type="submit" value="Query"/>
+				</form>
+			</div>
+
+			<table id="movieTable" class="display" cellspacing="0" width="100%">
+				<thead>
+					<tr>
+						<th>Movie ID</th>
+						<th>Recommendation Score</th>
+					</tr>
+				</thead>
+
+				<tfoot>
+					<tr>
+						<th>Movie ID</th>
+						<th>Recommendation Score</th>
+					</tr>
+				</tfoot>
+
+				<tbody>
+					{% if movieList %}
+					{% for movie in movieList %}
+					<tr>
+						<td align="center">{{ movie.userid }}</td>
+						<td align="center">{{ movie.pref }}</td>
+					</tr>
+					{% endfor %}
+					{% else %}
+					{% endif %}
+				</tbody>
+			</table>
+		</section>
+		
+		<br/><br/>
+		<hr/>
+		<section>
+			<p><b>By Zhong Yuteng, Wang Jian, Ao Huijun, Xiong Zhang</b></p>
+		</section>
+	</div>
+</body>
+</html>
