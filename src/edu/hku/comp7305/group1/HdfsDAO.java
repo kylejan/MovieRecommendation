@@ -10,15 +10,17 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
-import org.apache.hadoop.mapred.JobConf;
-
 /**
  * Created by zonyitoo on 14/4/15.
+ * 
  */
+
 public class HdfsDAO {
 
-    private static final String HDFS = "hdfs://192.168.1.210:9000/";
-
+    private static final String HDFS = "hdfs://student3-x1:9000/";
+    private String hdfsPath;
+    private Configuration conf;
+    
     public HdfsDAO(Configuration conf) {
         this(HDFS, conf);
     }
@@ -26,25 +28,6 @@ public class HdfsDAO {
     public HdfsDAO(String hdfs, Configuration conf) {
         this.hdfsPath = hdfs;
         this.conf = conf;
-    }
-
-    private String hdfsPath;
-    private Configuration conf;
-
-    public static void main(String[] args) throws IOException {
-        JobConf conf = config();
-        HdfsDAO hdfs = new HdfsDAO(conf);
-        hdfs.copyFile("datafile/item.csv", "/tmp/new");
-        hdfs.ls("/tmp/new");
-    }
-
-    public static JobConf config(){
-        JobConf conf = new JobConf(HdfsDAO.class);
-        conf.setJobName("HdfsDAO");
-        conf.addResource("classpath:/hadoop/core-site.xml");
-        conf.addResource("classpath:/hadoop/hdfs-site.xml");
-        conf.addResource("classpath:/hadoop/mapred-site.xml");
-        return conf;
     }
 
     public void mkdirs(String folder) throws IOException {
@@ -72,7 +55,7 @@ public class HdfsDAO {
         System.out.println("ls: " + folder);
         System.out.println("==========================================================");
         for (FileStatus f : list) {
-            System.out.printf("name: %s, folder: %s, size: %d\n", f.getPath(), f.isDir(), f.getLen());
+            System.out.printf("name: %s, folder: %s, size: %d\n", f.getPath(), f.isDirectory(), f.getLen());
         }
         System.out.println("==========================================================");
         fs.close();

@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -16,8 +16,15 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-
+/**
+ * 
+ * @author aohuijun
+ * Recommendation getting: matrix summarizing
+ */
 public class Step5 {
+
+//    public static final String JOB_NAME = Recommend.JOB_NAME;
+    public static final String JOB_NAME = "Movie Recommender Step 5";
 
     public static class Step5_RecommendMapper extends Mapper<LongWritable, Text, Text, Text> {
 
@@ -32,10 +39,20 @@ public class Step5 {
 
     public static class Step5_RecommendReducer extends Reducer<Text, Text, Text, Text> {
 
+    	/**
+    	 * Get the initial recommendation matrix. 
+    	 * Result: 
+    	 * 			userID1		itemID1,recommendation1
+    	 * 						itemID2,recommendation2
+    	 * 						itemID3,recommendation3
+    	 * 						...
+    	 * 			userID2		itemID1,recommendation1
+    	 * 			...
+    	 */
         @Override
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             System.out.println(key.toString() + ":");
-            Map<String, Double> map = new HashMap<String, Double>();// 结果
+            Map<String, Double> map = new HashMap<String, Double>();		// Storing the result. 
 
             for (Text line : values) {
                 System.out.println(line.toString());
@@ -44,7 +61,7 @@ public class Step5 {
                 Double score = Double.parseDouble(tokens[1]);
 
                 if (map.containsKey(itemID)) {
-                    map.put(itemID, map.get(itemID) + score);// 矩阵乘法求和计算
+                    map.put(itemID, map.get(itemID) + score);				// Calculate the sum of the multiplied results. 
                 } else {
                     map.put(itemID, score);
                 }
@@ -61,12 +78,13 @@ public class Step5 {
     }
 
     public static void run(final String input, final String output) throws IOException, InterruptedException, ClassNotFoundException {
-        JobConf conf = Recommend.config("MovieRecommender Step5");
+//        JobConf conf = Recommend.config("MovieRecommender Step5");
 
+    	Configuration conf = new Configuration();
         HdfsDAO hdfs = new HdfsDAO(Recommend.HDFS, conf);
         hdfs.rmr(output);
-
-        Job job = new Job(conf);
+        
+        Job job = Job.getInstance(conf, Step5.JOB_NAME);
         job.setJarByClass(Step5.class);
 
         job.setOutputKeyClass(Text.class);
