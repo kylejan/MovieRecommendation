@@ -153,6 +153,8 @@ public class Step4 {
         job.setInputFormatClass(TextInputFormat.class);
         job.setOutputFormatClass(TextOutputFormat.class);
 
+        job.setNumReduceTasks(7);
+
         FileInputFormat.setInputPaths(job, new Path(input1), new Path(input2));
         FileOutputFormat.setOutputPath(job, new Path(output));
 

@@ -81,6 +81,8 @@ public class Step3 {
         FileInputFormat.setInputPaths(job, new Path(input));
         FileOutputFormat.setOutputPath(job, new Path(output));
 
+        job.setNumReduceTasks(7);
+
 //        RunningJob job = JobClient.runJob(conf);
 //        while (!job.isComplete()) {
         job.waitForCompletion(true);
@@ -125,6 +127,8 @@ public class Step3 {
 
         job.setInputFormatClass(TextInputFormat.class);
         job.setOutputFormatClass(TextOutputFormat.class);
+
+        job.setNumReduceTasks(7);
 
         FileInputFormat.setInputPaths(job, new Path(input));
         FileOutputFormat.setOutputPath(job, new Path(output));
