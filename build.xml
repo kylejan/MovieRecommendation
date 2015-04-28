@@ -415,6 +415,10 @@
       <zipfileset src="${lib.hadoop.path}/mapreduce/hadoop-mapreduce-client-jobclient-2.6.0.jar"/>
       <zipfileset src="${lib.hadoop.path}/mapreduce/hadoop-mapreduce-client-hs-plugins-2.6.0.jar"/>
       <zipfileset src="${lib.hadoop.path}/mapreduce/hadoop-mapreduce-client-jobclient-2.6.0-tests.jar"/>
+
+      <manifest>
+        <attribute name="Main-Class" value="edu.hku.comp7305.group1.Recommend"/>
+      </manifest>
     </jar>
     <copy file="${temp.jar.path.MovieRecommendation.jar}" tofile="${artifact.temp.output.movierecommendation:jar}/MovieRecommendation.jar"/>
   </target>
